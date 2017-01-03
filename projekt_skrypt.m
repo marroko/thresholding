@@ -62,26 +62,57 @@ classdef projekt < matlab.apps.AppBase
             
             tmpImage(tmpImage > curr_k) = 1;
             tmpImage(tmpImage <= curr_k) = 0;
+
+%             app.PrgwasnyEditField.Value = curr_k; % TODO - wyswietl prog Otsu w GUI
+%             app.Slider.Value = curr_k;
+
             result = tmpImage;
        	end
-        
+
         function result = binarizeWithAdaptive(app, image)
-            tmpImage = image;
-            step = 100;
-            s = size(tmpImage);
-        
-            if s(1) < step && s(2) < step
-                result = binarizeWithOtsu(app, tmpImage);
-            else
-                hx = floor(s(1)/2);
-                hy = floor(s(2)/2);
-        
-                tmpImage(1:hx, 1:hy)     = binarizeWithAdaptive(app, tmpImage(1:hx, 1:hy));
-                tmpImage(1:hx, hy:end)   = binarizeWithAdaptive(app, tmpImage(1:hx, hy:end));
-                tmpImage(hx:end, 1:hy)   = binarizeWithAdaptive(app, tmpImage(hx:end,1:hy));
-                tmpImage(hx:end, hy:end) = binarizeWithAdaptive(app, tmpImage(hx:end, hy:end));
-                
-                result = tmpImage;
+%             tmpImage = image;
+%             step = 70;
+%             s = size(tmpImage);
+%
+%             if s(1) < step && s(2) < step
+%                 result = binarizeWithOtsu(app, tmpImage);
+%             else
+%                 hx = floor(s(1)/2);
+%                 hy = floor(s(2)/2);
+%
+%                 tmpImage(1:hx, 1:hy)     = binarizeWithAdaptive(app, tmpImage(1:hx, 1:hy));
+%                 tmpImage(1:hx, hy:end)   = binarizeWithAdaptive(app, tmpImage(1:hx, hy:end));
+%                 tmpImage(hx:end, 1:hy)   = binarizeWithAdaptive(app, tmpImage(hx:end,1:hy));
+%                 tmpImage(hx:end, hy:end) = binarizeWithAdaptive(app, tmpImage(hx:end, hy:end));
+%
+%                 result = tmpImage;
+%             end
+
+%             squareSide = [70 70];
+            squareSide = 2*floor(size(image)/16)+1; % wartosc domyslna dla matlaba
+            squareSideHalf = floor(squareSide/2);
+
+            [height, width, depth] = size(image);
+            result = zeros(height, width);
+
+            subimagePixelsCount = squareSideHalf(1) * squareSideHalf(2);
+
+            for i = 1+squareSideHalf(1) : height-squareSideHalf(1)
+                subimage = image(i-squareSideHalf(1):i-1, 1:squareSideHalf(2));
+                suma = sum(sum(subimage));
+
+                for j = 1+squareSideHalf(2) : width-squareSideHalf(2)
+                    suma = suma + sum(image(i-squareSideHalf(1):i-1, j));
+                    suma = suma - sum(image(i-squareSideHalf(1):i-1, j - squareSideHalf(2)));
+
+                    threshold = suma / subimagePixelsCount;
+
+                    if image(i, j) < threshold
+                        result(i, j) = 0;
+                    else
+                        result(i, j) = 1;
+                    end
+                end
             end
         end
     end
