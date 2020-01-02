@@ -16,6 +16,7 @@ classdef projekt < matlab.apps.AppBase
         MiejscenazbinaryzowanyobrazLabel  matlab.ui.control.Label
         NajpierwwybierzobrazLabel    matlab.ui.control.Label
         ZamianasygnauztemButton      matlab.ui.control.Button
+        Sygna1ToLabel                matlab.ui.control.Label
     end
 
 
@@ -170,6 +171,8 @@ classdef projekt < matlab.apps.AppBase
             if ~isequal(file, 0)
                 app.ImageChosen = true;
                 app.BinarizedImageGenerated = false;
+                app.SignalIsSwapped = false;
+                app.Sygna1ToLabel.Text = {'0 - Sygnał'; '1 - Tło'};
                 app.NajpierwwybierzobrazLabel.Text = {''};
                 
                 pathToFile = fullfile(path, file);
@@ -185,6 +188,7 @@ classdef projekt < matlab.apps.AppBase
         % Button pushed function: ZamianasygnauztemButton
         function swapSignalWithBackground(app, event)
             if app.BinarizedImageGenerated == true
+                app.Sygna1ToLabel.Text = {strcat('0' + ~app.SignalIsSwapped, ' - Sygnał'); strcat( '0' + app.SignalIsSwapped, ' - Tło')};
                 app.SignalIsSwapped = ~app.SignalIsSwapped;
                 app.BinarizedImage = ~app.BinarizedImage;
                 imshow(app.BinarizedImage, 'parent', app.UIAxes2);
@@ -223,7 +227,7 @@ classdef projekt < matlab.apps.AppBase
             app.WczytanieobrazuButton.BackgroundColor = [1 1 0];
             app.WczytanieobrazuButton.FontSize = 22;
             app.WczytanieobrazuButton.FontWeight = 'bold';
-            app.WczytanieobrazuButton.Position = [50 26 232 52];
+            app.WczytanieobrazuButton.Position = [50 34 232 52];
             app.WczytanieobrazuButton.Text = 'Wczytanie obrazu';
 
             % Create BinaryzacjametodOtsuButton
@@ -324,8 +328,14 @@ classdef projekt < matlab.apps.AppBase
             app.ZamianasygnauztemButton.BackgroundColor = [0.302 0.749 0.9294];
             app.ZamianasygnauztemButton.FontSize = 22;
             app.ZamianasygnauztemButton.FontWeight = 'bold';
-            app.ZamianasygnauztemButton.Position = [343 26 265 52];
+            app.ZamianasygnauztemButton.Position = [343 34 265 52];
             app.ZamianasygnauztemButton.Text = 'Zamiana sygnału z tłem';
+
+            % Create Sygna1ToLabel
+            app.Sygna1ToLabel = uilabel(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure);
+            app.Sygna1ToLabel.FontWeight = 'bold';
+            app.Sygna1ToLabel.Position = [551 7 61 28];
+            app.Sygna1ToLabel.Text = {'0 - Sygnał'; '1 - Tło'};
         end
     end
 
