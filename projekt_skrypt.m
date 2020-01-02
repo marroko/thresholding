@@ -145,7 +145,7 @@ classdef projekt < matlab.apps.AppBase
             if app.ImageChosen == true
                 tmpImage = app.OriginalImage;
                 
-                if app.SignalIsSwapped == true
+                if app.SignalIsSwapped == false
                     tmpImage(app.OriginalImage > app.PrgwasnyEditField.Value) = 1;
                     tmpImage(app.OriginalImage <= app.PrgwasnyEditField.Value) = 0;
                 else
