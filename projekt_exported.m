@@ -1,4 +1,4 @@
-classdef projekt < matlab.apps.AppBase
+classdef projekt_exported < matlab.apps.AppBase
 
     % Properties that correspond to app components
     properties (Access = public)
@@ -358,7 +358,7 @@ classdef projekt < matlab.apps.AppBase
     methods (Access = public)
 
         % Construct app
-        function app = projekt
+        function app = projekt_exported
 
             % Create and configure components
             createComponents(app)
@@ -381,4 +381,4 @@ classdef projekt < matlab.apps.AppBase
             delete(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure)
         end
     end
-end 
+end
