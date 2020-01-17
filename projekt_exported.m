@@ -69,28 +69,20 @@ classdef projekt_exported < matlab.apps.AppBase
 
         function result = binarizeWithAdaptive(~, image)
 
-            squareSide = 2*floor(size(image)/16)+1; % wartosc domyslna dla matlaba
-            squareSideHalf = floor(squareSide/2);
-
-            [height, width, ~] = size(image);
-            result = zeros(height, width);
-
-            subimagePixelsCount = squareSideHalf(1) * squareSideHalf(2);
-
-            for i = 1+squareSideHalf(1) : height-squareSideHalf(1)
-                subimage = image(i-squareSideHalf(1):i-1, 1:squareSideHalf(2));
-                suma = sum(sum(subimage));
-
-                for j = 1+squareSideHalf(2) : width-squareSideHalf(2)
-                    suma = suma + sum(image(i-squareSideHalf(1):i-1, j));
-                    suma = suma - sum(image(i-squareSideHalf(1):i-1, j - squareSideHalf(2)));
-
-                    threshold = suma / subimagePixelsCount;
-
-                    if image(i, j) < threshold
-                        result(i, j) = 0;
+            N = 2*floor(size(image)/16)+1; % wartosc domyslna dla matlaba
+            [h, w, ~] = size(image);
+            result = zeros(h, w);
+            N2 = floor(N/2);
+            
+            for i=1+N2:h-N2
+                for j=1+N2 : w-N2
+                    image2 = image(i-N2:i+N2 , j-N2:j+N2);
+                    threshold = mean(mean(image2));
+                    
+                    if image(i, j) > threshold
+                        result(i,j) = 1;
                     else
-                        result(i, j) = 1;
+                        result(i,j) = 0;
                     end
                 end
             end
@@ -208,7 +200,7 @@ classdef projekt_exported < matlab.apps.AppBase
             end
         end
 
-        % Callback function
+        % Callback function: Slider, Slider
         function updateNumericField(app, event)
             app.PrgwasnyEditField.Value = app.Slider.Value;
         end

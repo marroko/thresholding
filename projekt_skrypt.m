@@ -48,12 +48,12 @@ classdef projekt < matlab.apps.AppBase
                 S_0 = sum(below); 
                 S_1 = sum(above);
                 
-                X_0 = S_0/N_0; % œrednia jasnoœæ piksela w klasie
+                X_0 = S_0/N_0; % Å›rednia jasnoÅ›Ä‡ piksela w klasie
                 X_1 = S_1/N_1;
                 
                 W_0 = (sum((below - X_0).^2)) / N_0;
                 W_1 = (sum((above - X_1).^2)) / N_1;
-                W_w = (N_0/N)*W_0 + (N_1/N)*W_1; % suma wa¿ona wariancji wewn¹trzklasowych
+                W_w = (N_0/N)*W_0 + (N_1/N)*W_1; % suma waÅ¼ona wariancji wewnÄ…trzklasowych
                 
                 if curr_k < 0 || W_w < curr_W_w
                     curr_W_w = W_w;
@@ -69,28 +69,20 @@ classdef projekt < matlab.apps.AppBase
 
         function result = binarizeWithAdaptive(~, image)
 
-            squareSide = 2*floor(size(image)/16)+1; % wartosc domyslna dla matlaba
-            squareSideHalf = floor(squareSide/2);
-
-            [height, width, ~] = size(image);
-            result = zeros(height, width);
-
-            subimagePixelsCount = squareSideHalf(1) * squareSideHalf(2);
-
-            for i = 1+squareSideHalf(1) : height-squareSideHalf(1)
-                subimage = image(i-squareSideHalf(1):i-1, 1:squareSideHalf(2));
-                suma = sum(sum(subimage));
-
-                for j = 1+squareSideHalf(2) : width-squareSideHalf(2)
-                    suma = suma + sum(image(i-squareSideHalf(1):i-1, j));
-                    suma = suma - sum(image(i-squareSideHalf(1):i-1, j - squareSideHalf(2)));
-
-                    threshold = suma / subimagePixelsCount;
-
-                    if image(i, j) < threshold
-                        result(i, j) = 0;
+            N = 2*floor(size(image)/16)+1; % wartosc domyslna dla matlaba
+            [h, w, ~] = size(image);
+            result = zeros(h, w);
+            N2 = floor(N/2);
+            
+            for i=1+N2:h-N2
+                for j=1+N2 : w-N2
+                    image2 = image(i-N2:i+N2 , j-N2:j+N2);
+                    threshold = mean(mean(image2));
+                    
+                    if image(i, j) > threshold
+                        result(i,j) = 1;
                     else
-                        result(i, j) = 1;
+                        result(i,j) = 0;
                     end
                 end
             end
@@ -183,7 +175,7 @@ classdef projekt < matlab.apps.AppBase
                 app.ImageChosen = true;
                 app.BinarizedImageGenerated = false;
                 app.SignalIsSwapped = false;
-                app.Sygna1ToLabel.Text = {'0 - Sygna³'; '1 - T³o'};
+                app.Sygna1ToLabel.Text = {'0 - SygnaÅ‚'; '1 - TÅ‚o'};
                 app.NajpierwwybierzobrazLabel.Text = {''};
                 
                 pathToFile = fullfile(path, file);
@@ -199,7 +191,7 @@ classdef projekt < matlab.apps.AppBase
         % Button pushed function: ZamianasygnauztemButton
         function swapSignalWithBackground(app, event)
             if app.BinarizedImageGenerated == true
-                app.Sygna1ToLabel.Text = {strcat('0' + ~app.SignalIsSwapped, ' - Sygna³'); strcat( '0' + app.SignalIsSwapped, ' - T³o')};
+                app.Sygna1ToLabel.Text = {strcat('0' + ~app.SignalIsSwapped, ' - SygnaÅ‚'); strcat( '0' + app.SignalIsSwapped, ' - TÅ‚o')};
                 app.SignalIsSwapped = ~app.SignalIsSwapped;
                 app.BinarizedImage = ~app.BinarizedImage;
                 imshow(app.BinarizedImage, 'parent', app.UIAxes2);
@@ -208,7 +200,7 @@ classdef projekt < matlab.apps.AppBase
             end
         end
 
-        % Callback function
+        % Callback function: Slider, Slider
         function updateNumericField(app, event)
             app.PrgwasnyEditField.Value = app.Slider.Value;
         end
@@ -229,7 +221,7 @@ classdef projekt < matlab.apps.AppBase
             app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure = uifigure;
             app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure.Color = [0.9882 0.8745 0.8745];
             app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure.Position = [100 100 1097 705];
-            app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure.Name = 'Binaryzacja - Marek Kie³tyka, Micha³ Leszczyñski';
+            app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure.Name = 'Binaryzacja - Marek KieÅ‚tyka, MichaÅ‚ LeszczyÅ„ski';
             app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure.Resize = 'off';
 
             % Create WczytanieobrazuButton
@@ -248,7 +240,7 @@ classdef projekt < matlab.apps.AppBase
             app.BinaryzacjametodOtsuButton.FontSize = 16;
             app.BinaryzacjametodOtsuButton.FontWeight = 'bold';
             app.BinaryzacjametodOtsuButton.Position = [269.5 102 122 56];
-            app.BinaryzacjametodOtsuButton.Text = {'Binaryzacja'; 'metod¹ Otsu'};
+            app.BinaryzacjametodOtsuButton.Text = {'Binaryzacja'; 'metodÄ… Otsu'};
 
             % Create BinaryzacjazprogiemadaptiveButton
             app.BinaryzacjazprogiemadaptiveButton = uibutton(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure, 'push');
@@ -266,7 +258,7 @@ classdef projekt < matlab.apps.AppBase
             app.BinaryzacjazprogiemwasnymButton.FontSize = 16;
             app.BinaryzacjazprogiemwasnymButton.FontWeight = 'bold';
             app.BinaryzacjazprogiemwasnymButton.Position = [445 102 163 56];
-            app.BinaryzacjazprogiemwasnymButton.Text = {'Binaryzacja'; 'z progiem w³asnym'};
+            app.BinaryzacjazprogiemwasnymButton.Text = {'Binaryzacja'; 'z progiem wÅ‚asnym'};
 
             % Create PrgwasnyEditFieldLabel
             app.PrgwasnyEditFieldLabel = uilabel(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure);
@@ -276,7 +268,7 @@ classdef projekt < matlab.apps.AppBase
             app.PrgwasnyEditFieldLabel.FontWeight = 'bold';
             app.PrgwasnyEditFieldLabel.FontColor = [0 0.451 0.7412];
             app.PrgwasnyEditFieldLabel.Position = [742 119 122 23];
-            app.PrgwasnyEditFieldLabel.Text = 'Próg w³asny';
+            app.PrgwasnyEditFieldLabel.Text = 'PrÃ³g wÅ‚asny';
 
             % Create PrgwasnyEditField
             app.PrgwasnyEditField = uieditfield(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure, 'numeric');
@@ -344,14 +336,14 @@ classdef projekt < matlab.apps.AppBase
             app.ZamianasygnauztemButton.FontSize = 22;
             app.ZamianasygnauztemButton.FontWeight = 'bold';
             app.ZamianasygnauztemButton.Position = [343 34 265 52];
-            app.ZamianasygnauztemButton.Text = 'Zamiana sygna³u z t³em';
+            app.ZamianasygnauztemButton.Text = 'Zamiana sygnaÅ‚u z tÅ‚em';
 
             % Create Sygna1ToLabel
             app.Sygna1ToLabel = uilabel(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure);
             app.Sygna1ToLabel.VerticalAlignment = 'top';
             app.Sygna1ToLabel.FontWeight = 'bold';
             app.Sygna1ToLabel.Position = [551 7 61 28];
-            app.Sygna1ToLabel.Text = {'0 - Sygna³'; '1 - T³o'};
+            app.Sygna1ToLabel.Text = {'0 - SygnaÅ‚'; '1 - TÅ‚o'};
         end
     end
 
@@ -381,4 +373,4 @@ classdef projekt < matlab.apps.AppBase
             delete(app.BinaryzacjaMarekKietykaMichaLeszczyskiUIFigure)
         end
     end
-end 
+end
